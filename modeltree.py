@@ -154,7 +154,7 @@ class ModelTree():
             
             
             assert isinstance(model, TreeNode)
-            model.to("cuda")
+            # model.to("cuda")
 
             
             

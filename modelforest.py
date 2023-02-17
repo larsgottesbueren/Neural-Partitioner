@@ -104,7 +104,7 @@ class ModelForest():
                     Y_batch = torch.reshape(Y_batch, Y_batch_shape) 
                     Y_batch = Y_batch.type(dtype=torch.double)
 
-                    (_, _, _, _, current_weights) = crit(y_pred_assigned_bins.flatten(), Y_batch, input_weights_batch, calculate_booster_weights=True, n_bins=self.n_classes, confidence_scores=scores)
+                    (_, _, _, _, current_weights) = crit(y_pred_assigned_bins.flatten(), Y_batch, input_weights_batch, calculate_booster_weights=True, n_bins=self.n_classes)# , confidence_scores=scores)
                     del Y_batch
                     del y_pred_assigned_bins
                     del scores
@@ -208,4 +208,3 @@ class ModelForest():
 
     
 
-    

@@ -19,9 +19,9 @@ class TreeNode():
 
         if model_type == 'neural':
 
-            self.model = NeuralModel(n_input=n_input, n_hidden=self.n_hidden, num_class=num_class, opt=None).cuda()
+            self.model = NeuralModel(n_input=n_input, n_hidden=self.n_hidden, num_class=num_class, opt=None)
         elif model_type == 'linear':
-            self.model = LinearModel(n_input=n_input, n_hidden=self.n_hidden, num_class=num_class, opt=None).cuda()
+            self.model = LinearModel(n_input=n_input, n_hidden=self.n_hidden, num_class=num_class, opt=None)
         else:
             raise ValueError('model_type must be either neural or linear')
 
@@ -71,7 +71,7 @@ class TreeNode():
             return inference
 
     def cuda(self):
-        self.model.cuda()
+        print("asked for moving things to CUDA but no GPU support available")
         
 
     def train_model(self, X, Y, input_weights, ensemble_model_index, crit, data, batch_size=4096, iterations=5, lr=1e-3, use_generated_batches=False, use_new_knn_matrix=False, models_path = None):
@@ -329,7 +329,7 @@ class TreeNode():
 
                 
                 running_b_top_size_bound = batch_size
-                (loss, diff_sum, b, _, _ ) = crit(y_pred, Y_batch, input_weights_batch, org_n=running_b_top_size_bound)
+                (loss, diff_sum, b, _, _ ) = crit(y_pred, Y_batch, input_weights_batch) #, org_n=running_b_top_size_bound)
                 del Y_batch
                 
                 del y_pred

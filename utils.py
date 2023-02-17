@@ -46,8 +46,8 @@ def parse_args():
     parser.add_argument('--n_levels', default=N_LEVELS, type=int, help='number of levels in tree')
     parser.add_argument('--tree_branching', default=TREE_BRANCHING, type=int, help='number of children per node in tree')
     parser.add_argument('--model_type', default=MODEL_TYPE, type=str, help='Type of model to use')
-    parser.add_argument('--load_knn', action=argparse.BooleanOptionalAction, help='Load existing k-NN matrix from file')
-    parser.add_argument('--continue_train', action=argparse.BooleanOptionalAction, help='Load existing models from file')
+    parser.add_argument('--load_knn', action='store_true', help='Load existing k-NN matrix from file')
+    parser.add_argument('--continue_train', action='store_true', help='Load existing models from file')
 
 
     opt = parser.parse_args()
@@ -101,7 +101,8 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
     del model_forest
 
     torch.cuda.empty_cache()
-        
+
+    running_time = 0.0
 
     print('----- CALCULATING K-NN RECALL FOR EACH POINT ------- ')
 
@@ -156,7 +157,7 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
                 # find size of overlap between knn_points and bin_points
 
                 
-                knn_and_bin_points = torch.cat((candidate_set_points.cuda(), knn_points.cuda()))
+                knn_and_bin_points = torch.cat((candidate_set_points, knn_points))
                 
                 uniques = torch.unique(knn_and_bin_points)
 

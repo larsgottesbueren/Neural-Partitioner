@@ -1,7 +1,7 @@
 # SPECIFY PATHS AS ABSOLUTE PATHS
 
-path_to_mnist=D:\uni\thesis\learning_ann\data\raw\fashion-mnist-784-euclidean.hdf5
-path_to_sift=D:\uni\thesis\learning_ann\data\raw\sift-128-euclidean.hdf5
-path_to_knn_matrix=D:\uni\thesis\learning_ann\data
-path_to_models=D:\uni\thesis\learning_ann\data\models
-path_to_tensors=D:\uni\thesis\learning_ann
+path_to_mnist=/home/i11/gottesbueren/ANN/data/mnist/mnist-784-euclidean.hdf5
+path_to_sift=/home/i11/gottesbueren/ANN/data/sift/sift-128-euclidean.hdf5
+path_to_knn_matrix=/home/i11/gottesbueren/ANN/Neural-Partitioner/knn-matrix/
+path_to_models=/home/i11/gottesbueren/ANN/Neural-Partitioner/models
+path_to_tensors=/home/i11/gottesbueren/ANN/Neural-Partitioner/tensors/

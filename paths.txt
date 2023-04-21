@@ -2,7 +2,7 @@
 
 path_to_mnist=/home/i11/gottesbueren/ANN/data/mnist/mnist-784-euclidean.hdf5
 path_to_sift=/home/i11/gottesbueren/ANN/data/sift/sift-128-euclidean.hdf5
-path_to_glove=/home/gottesbueren/libs/ANN/data/glove/glove-100-angular.hdf5
+path_to_glove=/home/i11/gottesbueren/ANN/data/glove/glove-100-angular.hdf5
 path_to_knn_matrix=/home/i11/gottesbueren/ANN/Neural-Partitioner/knn-matrix/
 path_to_models=/home/i11/gottesbueren/ANN/Neural-Partitioner/models
 path_to_tensors=/home/i11/gottesbueren/ANN/Neural-Partitioner/tensors/

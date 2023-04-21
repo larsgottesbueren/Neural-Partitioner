@@ -9,7 +9,7 @@ import utils
 import prepare
 
 from torch.nn.functional import normalize
-
+import time
 import os.path
 
 def read_paths():
@@ -60,12 +60,15 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
         dataset = MyDataset(paths['path_to_sift'])
     elif data == 'mnist':
       dataset = MyDataset(paths['path_to_mnist'])
+    elif data == 'glove':
+      dataset = MyDataset(paths['path_to_glove'])
     pass
 
     # if data != 'custom':
     #     print(dataset.get_file().keys())
 
    
+    shall_normalize = data == 'glove'
     
     if custom_dataset is not None: 
         X = custom_dataset
@@ -73,7 +76,6 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
         X = dataset.get_file()['train']
 
     n_data = X.shape[0]
-
 
     # prepare knn ground truth
     class options(object):
@@ -84,32 +86,34 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
             normalize_data=False
             sift=False
             pass
+        elif data == 'glove':
+            normalize_data=True
+            sift=False
+            pass
         pass
 
     pass
 
-    
+    X = torch.tensor(X, dtype=torch.double, device=primary_device)    
+    if shall_normalize:
+        print('normalizing')
+        X = torch.nn.functional.normalize(X)
+        print('done normalizing')
+
 
     if prepare_knn:
-
         print('preparing knn with k = ', k_train)
-        
-        Y = prepare.dist_rank(torch.tensor(X, dtype=float), k_train, opt=options, data=data)
+        t = time.perf_counter()
+        Y = prepare.dist_rank(X, k_train, opt=options, data=data)
+        t2 = time.perf_counter()
+        print('preparing knn took', (t2-t1), 'seconds')
 
-        
-
-        
         f = h5py.File(paths['path_to_knn_matrix'] +  '/' + data + '-' + str(k_train) + '-nn.hdf5', 'w')
 
         arr = f.create_dataset('train', data=Y)
         f.close()
     else:
-        if data == 'sift':
-             train_dataset = MyDataset(paths['path_to_knn_matrix'] +  '/sift-' + str(k_train) + '-nn.hdf5')
-        else:
-            train_dataset = MyDataset(paths['path_to_knn_matrix'] + '/fashion_mnist_' + str(k_train) + '_nn.hdf5')
-        pass
-    
+        train_dataset = MyDataset(paths['path_to_knn_matrix'] +  '/' + data + '-' + str(k_train) + '-nn.hdf5')  
         Y = train_dataset.get_file()['train']
     pass
 
@@ -127,7 +131,6 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
         if(os.path.isfile(paths['path_to_models'] + '/' + data +  '-X.pt')):
             X = torch.load(paths['path_to_models'] + '/' + data +  '-X.pt')
         else:
-            X = torch.tensor(X, dtype=torch.double, device=primary_device)
             torch.save(X, paths['path_to_models'] + '/' + data + '-X.pt')
 
     else:
@@ -135,7 +138,6 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
         if(os.path.isfile(paths['path_to_models'] + '/' + data +  '-X.pt') and not do_training):
             X = torch.load(paths['path_to_models'] + '/' + data +  '-X.pt')
         else:
-            X = torch.tensor(X, dtype=torch.double, device=primary_device)
             torch.save(X, paths['path_to_models'] + '/' + data + '-X.pt')
 
 
@@ -161,6 +163,8 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
     else:
         X_test = X
         Y_test = Y
+    if shall_normalize:
+        X_test = torch.nn.functional.normalize(X_test)
 
     # build model
     
@@ -177,7 +181,7 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
     model_forest = ModelForest(num_models, input_dim, branching, levels, n_bins, n_hidden_params, model_type=model_type)
 
     
-
+    t1 = time.perf_counter()
     print('BUILDING TREE')
     if do_training:
         if continue_train:
@@ -211,12 +215,13 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
         print('training forest')
         model_forest.train_forest(X, Y, crit, epochs, batch_size, param_lr, data, paths['path_to_models'])
                 
-
+    t2 = time.perf_counter()
+    print('training took', (t2-t1), 'seconds')
     model_forest.eval()
-    with torch.no_grad():
+    t1 = time.perf_counter()
+    print('model eval (??) took', (t1-t2), 'seconds')
     
-
-
+    with torch.no_grad():
         if custom_dataset is not None:
             X_test = X
             Y_test = Y
@@ -230,8 +235,11 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
 
         print(' --- FINDING TEST ACCURACY --- \n')
         # TEST ACCCURACY
-        bins, plot_x, plot_y = utils.get_test_accuracy(model_forest, knn=Y_test, X_test=X_test, k=k_inference, batch_size=batch_size, bin_count_param=bin_count, models_path=paths['path_to_models']) 
 
+        t1 = time.perf_counter()
+        bins, plot_x, plot_y = utils.get_test_accuracy(model_forest, knn=Y_test, X_test=X_test, k=k_inference, batch_size=batch_size, bin_count_param=bin_count, models_path=paths['path_to_models']) 
+        t2 = time.perf_counter()
+        print('recall calculation took', (t2-t1), 'seconds')
 
         
     return (losses, bins, train_bins, plot_x, plot_y)      

@@ -51,7 +51,7 @@ def parse_args():
 
 
     opt = parser.parse_args()
-    if opt.dataset_name not in ['sift','mnist']:
+    if opt.dataset_name not in ['sift','mnist','glove']:
         raise ValueError('dataset_name must be one of "sift", "mnist"')
 
     if opt.model_type not in ['neural', 'linear']:
@@ -82,8 +82,6 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
 
     print('----- MODEL INFERENCE DONE ------- ')
 
-
-    
 
     n_q = query_bins.shape[1] # no of points in test set only
 
@@ -129,7 +127,6 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
             for point in range(n_q):
                 c2_time = time.time()
 
-                print('\rpoint ' + str(point) + ' / ' + str(n_q), end='')
                 max_i = -1
                
 

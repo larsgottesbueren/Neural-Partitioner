@@ -220,6 +220,8 @@ def run(n_bins, epochs, param_lr, n_hidden_params=128, num_levels=0, tree_branch
     model_forest.eval()
     t1 = time.perf_counter()
     print('model eval (??) took', (t1-t2), 'seconds')
+
+    ## TODO save the model?
     
     with torch.no_grad():
         if custom_dataset is not None:

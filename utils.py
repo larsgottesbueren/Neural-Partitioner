@@ -76,14 +76,23 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
 
     print('-----DOING MODEL INFERENCE ------- ')
 
+    for my_batch_size in [1, 32, 128, 1024]:
+        t1 = time.time()
+        query_bins, scores, dataset_bins = model_forest.infer(X_test, my_batch_size, bin_count_param, models_path)
+        t2 = time.time()
+        print("Inference with batch size", batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries")
 
 
-    query_bins, scores, dataset_bins = model_forest.infer(X_test, batch_size, bin_count_param, models_path)
+    
 
     print('----- MODEL INFERENCE DONE ------- ')
 
 
     n_q = query_bins.shape[1] # no of points in test set only
+
+    print ("num queries = ", n_q)
+
+    exit()
 
     all_points_bins = []
 
@@ -122,6 +131,8 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
 
             print("%d models, %d bins "%(num_models + 1, bin_count))
             print()
+
+            running_time = 0.0
 
 
             for point in range(n_q):
@@ -178,6 +189,7 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
             accuracy = torch.mean(accuracy)
 
             print('mean accuracy ', accuracy)
+            print('running time', running_time)
             candidate_set_size = torch.mean(candidate_set_sizes)
             print("mean candidate set size", candidate_set_size)
             print()

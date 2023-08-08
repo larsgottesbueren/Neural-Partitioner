@@ -80,7 +80,7 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
         t1 = time.time()
         query_bins, scores, dataset_bins = model_forest.infer(X_test, my_batch_size, bin_count_param, models_path)
         t2 = time.time()
-        print("Inference with batch size", my_batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries", "That's" (t2-t1)/(1000 * len(X_test), "ms per query")
+        print("Inference with batch size", my_batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries", "That's", (t2-t1)/(1000 * len(X_test)), "ms per query"))
 
 
     

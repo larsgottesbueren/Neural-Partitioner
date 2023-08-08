@@ -76,11 +76,11 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
 
     print('-----DOING MODEL INFERENCE ------- ')
 
-    for my_batch_size in [1, 32, 128, 1024]:
+    for my_batch_size in [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16000]:
         t1 = time.time()
         query_bins, scores, dataset_bins = model_forest.infer(X_test, my_batch_size, bin_count_param, models_path)
         t2 = time.time()
-        print("Inference with batch size", batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries")
+        print("Inference with batch size", my_batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries")
 
 
     

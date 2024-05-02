@@ -76,15 +76,27 @@ def get_test_accuracy(model_forest, knn, X_test, k, batch_size=1024, bin_count_p
 
     print('-----DOING MODEL INFERENCE ------- ')
 
-    for my_batch_size in [1, 2, 3, 4, 5, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16000]:
+    part_printed = False
+    for my_batch_size in [16000]:
         t1 = time.time()
         query_bins, scores, dataset_bins = model_forest.infer(X_test, my_batch_size, bin_count_param, models_path)
         t2 = time.time()
         print("Inference with batch size", my_batch_size, "took", (t2-t1), "seconds for", len(X_test), "queries", "That's", 1000*(t2-t1)/(len(X_test)), "ms per query")
 
-
-
-    
+        if not part_printed:
+            part_printed = True
+            with open('neural-clusters.txt', 'w') as f:
+                for db in dataset_bins:
+                    for x in db:
+                        f.write(str(x) + ' ')
+                    f.write('\n')
+            with open('neural-routes.txt', 'w') as f:
+                f.write('1\nR\nUSP USP 0 250 22 true 10000 22 64 350\n')
+                for qb in query_bins:
+                    for x in qb:
+                        f.write(str(x) + ' ')
+                    f.write('\n')
+   
 
     print('----- MODEL INFERENCE DONE ------- ')
 
